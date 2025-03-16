@@ -1,0 +1,12 @@
+[
+  {
+    "hello thereName": "John Doe",
+    "Team": "Team Alpha",
+    "Score": "0"
+  },
+  {
+    "hello thereName": "Jane Smith",
+    "Team": "Team Beta",
+    "Score": "0"
+  }
+]
