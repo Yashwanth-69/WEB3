@@ -6,7 +6,7 @@ const bodyParser = require("body-parser");
 const app = express();
 // const router = express.Router();
 
-const VALID_ACCESS_KEYS = ["JURY2025", "ADMIN123"];
+const VALID_ACCESS_KEYS = ["ADMIN123","JURY1","JURY2","JURY3"] ;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -21,7 +21,8 @@ app.post("/api/login", (req, res) => {
     const { accessKey } = req.body;
     
     if (VALID_ACCESS_KEYS.includes(accessKey)) {
-        return res.json({ success: true, message: "Login successful!" });
+        const jury_index = VALID_ACCESS_KEYS.indexOf(accessKey);
+        return res.json({ success: true, message: "Login successful!", jury_no: jury_index});
     } else {
         return res.status(401).json({ success: false, message: "Invalid access key" });
     }
