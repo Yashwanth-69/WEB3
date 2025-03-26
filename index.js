@@ -1,36 +1,37 @@
-require("dotenv").config();
-const express = require("express");
-const cors = require("cors");
-const bodyParser = require("body-parser");
+const axios = require('axios'); // Install using `npm install axios`
+require('dotenv').config();
+const express = require('express');
+const bodyParser = require('body-parser');
 
 const app = express();
-// const router = express.Router();
-
-const VALID_ACCESS_KEYS = ["ADMIN123","JURY1","JURY2","JURY3"] ;
-
-app.use(cors());
 app.use(bodyParser.json());
 
+const GOOGLE_SHEET_API = "https://script.google.com/macros/s/AKfycbzzq9V11rM2pljU0F04Dn3b7eKMHiIfZ9CbR38KKPsuEJZwm0_SgM1xVEaJhfHtw5Q/exec";
 
-app.get("/", (req, res) => {
-    res.send("Hello world")
-})
+async function fetchAccessKeys() {
+    try {
+        const response = await axios.get(GOOGLE_SHEET_API);
+        const data = typeof response.data === "string" ? JSON.parse(response.data) : response.data;
+        
+        return data.accessKeys;
+    } catch (error) {
+        console.error("Error fetching access keys:", error);
+        return [];
+    }
+}
 
-// Login route
-app.post("/api/login", (req, res) => {
+app.post('/api/login', async (req, res) => {
     const { accessKey } = req.body;
-    
+    const VALID_ACCESS_KEYS = await fetchAccessKeys();
     if (VALID_ACCESS_KEYS.includes(accessKey)) {
         const jury_index = VALID_ACCESS_KEYS.indexOf(accessKey);
-        return res.json({ success: true, message: "Login successful!", jury_no: jury_index});
+        return res.json({ success: true, message: "Login successful!", jury_no: jury_index });
     } else {
         return res.status(401).json({ success: false, message: "Invalid access key" });
     }
+});
 
-})
-
-module.exports = app;
-const PORT = process.env.PORT || 5000; // Use port from .env or default to 5000
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
 });
